@@ -11,7 +11,6 @@ namespace CalculatorApp
     {
         private string _calculation = string.Empty;
         private string _result= string.Empty;
-
         public string Calculation
         {
             get { return _calculation; }
@@ -24,7 +23,6 @@ namespace CalculatorApp
                 }
             }
         }
-
         public string Result
         {
             get { return _result; }
@@ -36,30 +34,25 @@ namespace CalculatorApp
                     OnPropertyChanged();
                 }
             }
-        }
-        
+        }      
         public MainWindow()
         {
             InitializeComponent();
             DataContext = this; // Set the DataContext to this instance for data binding
         }
-
         // Event handler for the "Memory Clear" button
         private double _memoryValue = 0;
-
         private void MemoryClearButton_Click(object sender, RoutedEventArgs e)
         {
             _memoryValue = 0;
             // Optionally update a UI element to indicate that memory has been cleared
         }
-
         private void MemoryRecallButton_Click(object sender, RoutedEventArgs e)
         {
             // Display the value stored in memory in the result area
             Result = _memoryValue.ToString();
             Calculation = $"MR({_memoryValue})";
         }
-
         private void MemorySubtractionButton_Click(object sender, RoutedEventArgs e)
         {
             if (double.TryParse(Result, out double resultValue))
@@ -74,7 +67,6 @@ namespace CalculatorApp
                 Calculation = "Invalid Input";
             }
         }
-
         // Event handler for the "Memory Addition" button
         private void MemoryAdditionButton_Click(object sender, RoutedEventArgs e)
         {
@@ -90,16 +82,12 @@ namespace CalculatorApp
                 Calculation = "Invalid Input";
             }
         }
-
-
         // Event handler for the "Clear" button
         private void ClearButton_Click(object sender, RoutedEventArgs e)
         {
             Result = "0";
             Calculation = string.Empty;
         }
-
-
         // Event handler for the "Change Sign" button
         private void ChangeSignButton_Click(object sender, RoutedEventArgs e)
         {
@@ -115,8 +103,6 @@ namespace CalculatorApp
                 Calculation = "Invalid Input";
             }
         }
-
-
         // Event handler for the "Percent" button
         private void PercentButton_Click(object sender, RoutedEventArgs e)
         {
@@ -126,7 +112,6 @@ namespace CalculatorApp
                 Calculation = $"{resultValue} %";
             }
         }
-
         // Event handler for the "Square Root" button
         private void SquareRootButton_Click(object sender, RoutedEventArgs e)
         {
@@ -141,13 +126,12 @@ namespace CalculatorApp
                 Calculation = "Invalid Input";
             }
         }
-
         public void NumberButton_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
             if (button != null)
             {
-                string buttonContent = button.Content.ToString();
+                string buttonContent = button.Content?.ToString() ?? string.Empty;
                 if (Result == "0" || Result == "Error")
                 {
                     Result = buttonContent;
@@ -158,13 +142,12 @@ namespace CalculatorApp
                 }
             }
         }
-
         public void OperationButton_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
             if (button != null)
             {
-                string operation = button.Content.ToString();
+                string operation = button.Content?.ToString() ?? string.Empty;
                 if (!string.IsNullOrEmpty(Result))
                 {
                     if (!char.IsDigit(Result[^1]))
@@ -177,10 +160,8 @@ namespace CalculatorApp
                 }
             }
         }
-
-
         // Event handler for the "Decimal" button
-        private void DecimalButton_Click()
+        private void DecimalButton_Click(object sender, RoutedEventArgs e)
         {
             if (Result == "0" || Result == "Error")
             {
@@ -191,17 +172,20 @@ namespace CalculatorApp
                 Result += ".";
             }
         }
-
-        // Event handler for the "Equals" button
+        // // Event handler for the "Equals" button
         private void EqualsButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!string.IsNullOrEmpty(Result))
+            if (Result != null)
             {
+                // Replace custom symbols with standard symbols
+                string calculationForCompute = Calculation.Replace("×", "*").Replace("÷", "/") + Result;
+
                 Calculation += Result;
+
                 try
                 {
-                    var result = new System.Data.DataTable().Compute(Calculation, "");
-                    Result = result != null ? result.ToString() : string.Empty;
+                    var result = new System.Data.DataTable().Compute(calculationForCompute, "");
+                    Result = result?.ToString() ?? string.Empty;
                     Calculation = string.Empty;
                 }
                 catch (Exception)
@@ -211,84 +195,95 @@ namespace CalculatorApp
                 }
             }
         }
-
         private const int MaxResultLength = 15;
-
         // Event handler for the "ResultTextBox" text changed event
         private void ResultTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             {
-            // Limit the length of the result text
-            if (Result.Length > MaxResultLength)
-            {
-                Result = Result.Substring(0, MaxResultLength);
+                // Limit the length of the result text
+                if (Result.Length > MaxResultLength)
+                {
+                    Result = Result.Substring(0, MaxResultLength);
+                }
+                // Handle key press events
+                switch (e.Key)
+                {
+                    case Key.D0:
+                    case Key.NumPad0:
+                        NumberButton_Click("0",e);
+                        break;
+                    case Key.D1:
+                    case Key.NumPad1:
+                        NumberButton_Click("1", e);
+                        break;
+                    case Key.D2:
+                    case Key.NumPad2:
+                        NumberButton_Click("2", e);
+                        break;
+                    case Key.D3:
+                    case Key.NumPad3:
+                        NumberButton_Click("3", e);
+                        break;
+                    case Key.D4:
+                    case Key.NumPad4:
+                        NumberButton_Click("4", e);
+                        break;
+                    case Key.D5:
+                    case Key.NumPad5:
+                        NumberButton_Click("5", e);
+                        break;
+                    case Key.D6:
+                    case Key.NumPad6:
+                        NumberButton_Click("6", e);
+                        break;
+                    case Key.D7:
+                    case Key.NumPad7:
+                        NumberButton_Click("7", e);
+                        break;
+                    case Key.D8:
+                    case Key.NumPad8:
+                        NumberButton_Click("8", e);
+                        break;
+                    case Key.D9:
+                    case Key.NumPad9:
+                        NumberButton_Click("9", e);
+                        break;
+                    case Key.Add:
+                        OperationButton_Click("+", e);
+                        break;  
+                    case Key.Subtract:
+                        OperationButton_Click("-", e);
+                        break;
+                    case Key.Multiply:
+                        OperationButton_Click("×", e);
+                        break;
+                    case Key.Divide:
+                        OperationButton_Click("÷", e);
+                        break;
+                    case Key.Decimal:
+                        DecimalButton_Click(".", e );
+                        break;
+                    case Key.Enter:
+                        EqualsButton_Click(sender, e);
+                        break;
+                    case Key.Back:
+                        HandleBackspace();
+                        break;
+                    default:
+                        break;
+                }
             }
-
-            // Handle key press events
-            switch (e.Key)
+        }
+        private void HandleBackspace()
+        {
+            if (!string.IsNullOrEmpty(Result))
             {
-                case Key.D0:
-                case Key.NumPad0:
-                    NumberButton_Click("0");
-                    break;
-                case Key.D1:
-                case Key.NumPad1:
-                    NumberButton_Click("1");
-                    break;
-                case Key.D2:
-                case Key.NumPad2:
-                    NumberButton_Click("2");
-                    break;
-                case Key.D3:
-                case Key.NumPad3:
-                    NumberButton_Click("3");
-                    break;
-                case Key.D4:
-                case Key.NumPad4:
-                    NumberButton_Click("4");
-                    break;
-                case Key.D5:
-                case Key.NumPad5:
-                    NumberButton_Click("5");
-                    break;
-                case Key.D6:
-                case Key.NumPad6:
-                    NumberButton_Click("6");
-                    break;
-                case Key.D7:
-                case Key.NumPad7:
-                    NumberButton_Click("7");
-                    break;
-                case Key.D8:
-                case Key.NumPad8:
-                    NumberButton_Click("8");
-                    break;
-                case Key.D9:
-                case Key.NumPad9:
-                    NumberButton_Click("9");
-                    break;
-
-
-                case Key.Add:
-                    OperationButton_Click("+");
-                    break;
-                case Key.Subtract:
-                    OperationButton_Click("-");
-                    break;
-                case Key.Multiply:
-                    OperationButton_Click("×");
-                    break;
-                case Key.Divide:
-                    OperationButton_Click("÷");
-                    break;
-                case Key.Decimal:
-                    DecimalButton_Click();
-                    break;
-                case Key.Enter:
-                    EqualsButton_Click();
-                    break;
-                default:
-                    break;
+                Result = Result.Substring(0, Result.Length - 1);
+                // If the result becomes empty after backspace, reset it to "0"
+                if (string.IsNullOrEmpty(Result))
+                {
+                    Result = "0";
+                }
             }
         }
         // INotifyPropertyChanged implementation
@@ -297,7 +292,5 @@ namespace CalculatorApp
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
     }
-
 }
